@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const saleSchema = new mongoose.Schema({
   saleNumber: {
@@ -176,4 +176,4 @@ saleSchema.virtual('formattedDate').get(function() {
 // Ensure virtual fields are serialized
 saleSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Sale', saleSchema);
+export default mongoose.model('Sale', saleSchema);

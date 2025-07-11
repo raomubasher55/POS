@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
   name: {
@@ -77,4 +77,4 @@ categorySchema.statics.getCategoryTree = async function(businessId) {
 // Ensure virtual fields are serialized
 categorySchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Category', categorySchema);
+export default mongoose.model('Category', categorySchema);

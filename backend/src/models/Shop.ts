@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const shopSchema = new mongoose.Schema({
   name: {
@@ -75,4 +75,4 @@ shopSchema.methods.isOpen = function() {
 // Ensure virtual fields are serialized
 shopSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Shop', shopSchema);
+export default mongoose.model('Shop', shopSchema);

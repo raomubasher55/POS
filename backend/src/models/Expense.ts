@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const expenseSchema = new mongoose.Schema({
   businessId: {
@@ -102,7 +102,7 @@ expenseSchema.index({ recordedBy: 1, createdAt: -1 });
 
 // Static method to get expense summary
 expenseSchema.statics.getExpenseSummary = async function(businessId, shopId, startDate, endDate) {
-  const matchQuery = {
+  const matchQuery: any = {
     businessId,
     date: { $gte: startDate, $lte: endDate },
     status: { $in: ['approved', 'paid'] }
@@ -221,4 +221,4 @@ expenseSchema.methods.calculateNextDue = function() {
 // Ensure virtual fields are serialized
 expenseSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Expense', expenseSchema);
+export default mongoose.model('Expense', expenseSchema);

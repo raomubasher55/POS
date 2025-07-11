@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -106,4 +106,4 @@ productSchema.methods.updateShopInventory = function(shopId, quantity) {
 // Ensure virtual fields are serialized
 productSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Product', productSchema);
+export default mongoose.model('Product', productSchema);

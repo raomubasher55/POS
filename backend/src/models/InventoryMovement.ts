@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const inventoryMovementSchema = new mongoose.Schema({
   productId: {
@@ -118,7 +118,7 @@ inventoryMovementSchema.statics.createMovement = async function(data) {
 
 // Method to get movement summary
 inventoryMovementSchema.statics.getMovementSummary = async function(productId, shopId, startDate, endDate) {
-  const match = { productId, shopId };
+  const match: any = { productId, shopId };
   if (startDate && endDate) {
     match.createdAt = { $gte: startDate, $lte: endDate };
   }
@@ -137,4 +137,4 @@ inventoryMovementSchema.statics.getMovementSummary = async function(productId, s
   return summary;
 };
 
-module.exports = mongoose.model('InventoryMovement', inventoryMovementSchema);
+export default mongoose.model('InventoryMovement', inventoryMovementSchema);

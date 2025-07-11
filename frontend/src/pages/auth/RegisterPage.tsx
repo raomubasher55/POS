@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import type { RegisterRequest } from '../../types';
 
 const RegisterPage: React.FC = () => {
@@ -22,10 +22,10 @@ const RegisterPage: React.FC = () => {
       setIsLoading(true);
       await registerUser(data);
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError('root', {
         type: 'manual',
-        message: error?.message || 'Registration failed. Please try again.'
+        message: (error instanceof Error ? error.message : 'Registration failed. Please try again.')
       });
     } finally {
       setIsLoading(false);

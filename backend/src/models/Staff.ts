@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const staffSchema = new mongoose.Schema({
   userId: {
@@ -81,7 +81,7 @@ staffSchema.index({ userId: 1 }, { unique: true });
 // Virtual for employment duration
 staffSchema.virtual('employmentDuration').get(function() {
   const endDate = this.terminationDate || new Date();
-  const duration = endDate - this.hireDate;
+  const duration = endDate.getTime() - this.hireDate.getTime();
   const days = Math.floor(duration / (1000 * 60 * 60 * 24));
   const years = Math.floor(days / 365);
   const months = Math.floor((days % 365) / 30);
@@ -136,4 +136,4 @@ staffSchema.methods.getPerformanceMetrics = async function(startDate, endDate) {
 // Ensure virtual fields are serialized
 staffSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Staff', staffSchema);
+export default mongoose.model('Staff', staffSchema);

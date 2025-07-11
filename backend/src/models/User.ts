@@ -53,7 +53,7 @@ const userSchema = new Schema<IUser>({
 });
 
 // Indexes
-userSchema.index({ email: 1 }, { unique: true });
+// Email index is already created by unique: true in schema definition
 userSchema.index({ businessId: 1, role: 1 });
 
 // Hash password before saving

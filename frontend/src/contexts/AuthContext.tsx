@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Business, LoginRequest, RegisterRequest } from '../types';
 import { apiService } from '../services/api';
 import toast from 'react-hot-toast';
 
-interface AuthContextType {
+export interface AuthContextType {
   // State
   user: User | null;
   business: Business | null;
@@ -87,8 +87,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.success('Login successful!');
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Login failed. Please try again.';
+    } catch (error: unknown) {
+      const errorMessage = (error instanceof Error ? error.message : 'Login failed. Please try again.');
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -107,8 +107,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.success('Registration successful! Welcome to POS System!');
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Registration failed. Please try again.';
+    } catch (error: unknown) {
+      const errorMessage = (error instanceof Error ? error.message : 'Registration failed. Please try again.');
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -171,37 +171,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// Custom hook to use auth context
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-// HOC for protected routes
-export const withAuth = <P extends object>(
-  Component: React.ComponentType<P>
-): React.FC<P> => {
-  return (props: P) => {
-    const { isAuthenticated, isLoading } = useAuth();
-
-    if (isLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
-      );
-    }
-
-    if (!isAuthenticated) {
-      window.location.href = '/login';
-      return null;
-    }
-
-    return <Component {...props} />;
-  };
-};
-
+export { AuthContext };
 export default AuthContext;

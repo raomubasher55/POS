@@ -7,6 +7,7 @@ import type {
   RefreshTokenRequest,
   User,
   Business,
+  BusinessSettings,
   Product,
   ProductFilters,
   CreateProductRequest,
@@ -21,7 +22,7 @@ import type {
 } from '../types';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const API_VERSION = '/api/v1';
 
 class ApiService {
@@ -60,7 +61,7 @@ class ApiService {
               await this.refreshToken({ refreshToken });
               // Retry the original request
               return this.client.request(error.config);
-            } catch (refreshError) {
+            } catch {
               // Refresh failed, redirect to login
               this.clearAuth();
               window.location.href = '/login';
@@ -299,7 +300,7 @@ class ApiService {
     });
   }
 
-  async createStaff(data: any): Promise<Staff> {
+  async createStaff(data: Partial<Staff>): Promise<Staff> {
     return this.request({
       method: 'POST',
       url: '/staff',
@@ -320,7 +321,7 @@ class ApiService {
     });
   }
 
-  async getInventoryReport(shopId?: string): Promise<any> {
+  async getInventoryReport(shopId?: string): Promise<unknown> {
     return this.request({
       method: 'GET',
       url: '/reports/inventory',
@@ -337,14 +338,14 @@ class ApiService {
     });
   }
 
-  async getBusinessSettings(id: string): Promise<any> {
+  async getBusinessSettings(id: string): Promise<BusinessSettings> {
     return this.request({
       method: 'GET',
       url: `/businesses/${id}/settings`,
     });
   }
 
-  async updateBusinessSettings(id: string, settings: any): Promise<any> {
+  async updateBusinessSettings(id: string, settings: Partial<BusinessSettings>): Promise<BusinessSettings> {
     return this.request({
       method: 'PUT',
       url: `/businesses/${id}/settings`,

@@ -28,7 +28,7 @@ const businessSchema = new Schema<IBusiness>({
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Will be set after user creation during registration
   },
   subscriptionStatus: {
     type: String,
@@ -81,7 +81,8 @@ businessSchema.index({ subscriptionStatus: 1 });
 
 // Virtual for subscription active status
 businessSchema.virtual('isSubscriptionActive').get(function() {
-  return this.subscriptionStatus === 'active' && this.subscriptionExpiry > new Date();
+  const activeStatuses = ['active', 'trial'];
+  return activeStatuses.includes(this.subscriptionStatus) && this.subscriptionExpiry > new Date();
 });
 
 // Ensure virtual fields are serialized

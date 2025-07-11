@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import type { LoginRequest } from '../../types';
 
 const LoginPage: React.FC = () => {
@@ -21,10 +21,10 @@ const LoginPage: React.FC = () => {
       setIsLoading(true);
       await login(data);
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError('root', {
         type: 'manual',
-        message: error?.message || 'Login failed. Please try again.'
+        message: (error instanceof Error ? error.message : 'Login failed. Please try again.')
       });
     } finally {
       setIsLoading(false);

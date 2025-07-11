@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema({
   businessId: {
@@ -177,7 +177,7 @@ subscriptionSchema.methods.daysUntilRenewal = function() {
   if (this.status !== 'active') return null;
   
   const now = new Date();
-  const diffTime = this.currentPeriodEnd - now;
+  const diffTime = this.currentPeriodEnd.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
   return diffDays > 0 ? diffDays : 0;
@@ -205,4 +205,4 @@ subscriptionSchema.methods.getUsage = async function() {
 // Ensure virtual fields are serialized
 subscriptionSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Subscription', subscriptionSchema);
+export default mongoose.model('Subscription', subscriptionSchema);

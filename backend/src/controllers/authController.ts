@@ -59,7 +59,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const savedUser = await user.save();
 
     // Update business with owner reference
-    savedBusiness.owner = savedUser._id;
+    savedBusiness.owner = savedUser._id as any;
     await savedBusiness.save();
 
     // Generate tokens

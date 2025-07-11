@@ -7,7 +7,15 @@
       "Bash(ls:*)",
       "Bash(npm run build:*)",
       "Bash(node:*)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(npm run lint)",
+      "Bash(npm start)",
+      "Bash(npm run dev:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

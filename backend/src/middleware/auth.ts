@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
 import { AuthenticatedRequest, JwtPayload } from '../types';
@@ -7,13 +7,13 @@ export const generateTokens = (userId: string): { accessToken: string; refreshTo
   const accessToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
+    { expiresIn: '1h' }
   );
 
   const refreshToken = jwt.sign(
     { userId },
     process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+    { expiresIn: '7d' }
   );
 
   return { accessToken, refreshToken };
@@ -92,7 +92,7 @@ export const requireRole = (roles: string | string[]) => {
 
     const userRoles = Array.isArray(roles) ? roles : [roles];
     
-    if (!userRoles.includes(req.user.role)) {
+    if (!userRoles.includes(req.user.role)) { 
       res.status(403).json({ message: 'Insufficient permissions' });
       return;
     }

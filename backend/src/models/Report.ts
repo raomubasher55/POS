@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const reportSchema = new mongoose.Schema({
   businessId: {
@@ -99,7 +99,7 @@ reportSchema.statics.generateSalesReport = async function(businessId, shopId, st
   const Sale = mongoose.model('Sale');
   const Product = mongoose.model('Product');
   
-  const matchQuery = {
+  const matchQuery: any = {
     businessId,
     createdAt: { $gte: startDate, $lte: endDate },
     status: { $in: ['completed', 'partial_refund'] }
@@ -180,7 +180,7 @@ reportSchema.statics.generateInventoryReport = async function(businessId, shopId
     { $match: matchQuery },
     { $unwind: '$inventory' },
     {
-      $match: shopId ? { 'inventory.shopId': mongoose.Types.ObjectId(shopId) } : {}
+      $match: shopId ? { 'inventory.shopId': new mongoose.Types.ObjectId(shopId) } : {}
     },
     {
       $group: {
@@ -238,4 +238,4 @@ reportSchema.methods.exportReport = async function(format) {
 // Ensure virtual fields are serialized
 reportSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Report', reportSchema);
+export default mongoose.model('Report', reportSchema);
