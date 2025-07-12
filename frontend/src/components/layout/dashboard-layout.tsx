@@ -53,7 +53,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar */}
       <div
         className={cn(
@@ -62,11 +62,11 @@ export function DashboardLayout() {
         )}
       >
         <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed left-0 top-0 h-full w-64 bg-card border-r">
-          <div className="flex items-center justify-between p-4 border-b">
+        <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg">
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">POS</span>
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">POS</span>
               </div>
               <span className="font-semibold text-lg">POS System</span>
             </div>
@@ -89,8 +89,8 @@ export function DashboardLayout() {
                   className={cn(
                     'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-primary-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -104,10 +104,10 @@ export function DashboardLayout() {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-card border-r">
-          <div className="flex items-center space-x-2 p-4 border-b">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">POS</span>
+        <div className="flex flex-col flex-grow bg-white shadow-xl">
+          <div className="flex items-center space-x-2 p-4 border-b border-gray-100">
+            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">POS</span>
             </div>
             <span className="font-semibold text-lg">POS System</span>
           </div>
@@ -121,8 +121,8 @@ export function DashboardLayout() {
                   className={cn(
                     'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-primary-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -137,7 +137,7 @@ export function DashboardLayout() {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 bg-background border-b">
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center space-x-4">
               <Button
@@ -149,11 +149,11 @@ export function DashboardLayout() {
                 <Menu className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-lg font-semibold">
+                <h1 className="text-lg font-semibold text-gray-900">
                   {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
                 </h1>
                 {business && (
-                  <p className="text-sm text-muted-foreground">{business.name}</p>
+                  <p className="text-sm text-gray-500">{business.name}</p>
                 )}
               </div>
             </div>

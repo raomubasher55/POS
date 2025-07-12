@@ -46,7 +46,7 @@
 - Role-based permissions (cashier, manager, admin)
 - Login credentials management
 
-<!-- ### 6. Multi-Shop Support (Week 6). not for now
+<!-- ### 6. Multi-Shop Support (Week 6). not for now (comming soon) don't work on it
 - Shop creation and configuration
 - Shop-specific inventory
 - Inter-shop stock transfers

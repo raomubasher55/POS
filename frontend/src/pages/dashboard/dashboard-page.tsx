@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import { formatCurrency } from '@/lib/utils';
+import { apiService } from '@/services/api.service';
+import { toast } from '@/hooks/use-toast';
 import {
   DollarSign,
   ShoppingCart,
@@ -10,67 +13,67 @@ import {
   Calendar,
 } from 'lucide-react';
 
-// Mock data - replace with real API calls
-const stats = [
-  {
-    title: 'Total Revenue',
-    value: 45231.89,
-    change: '+20.1%',
-    icon: DollarSign,
-    description: 'from last month',
-  },
-  {
-    title: 'Sales',
-    value: 2350,
-    change: '+180.1%',
-    icon: ShoppingCart,
-    description: 'from last month',
-  },
-  {
-    title: 'Products',
-    value: 12234,
-    change: '+19%',
-    icon: Package,
-    description: 'in inventory',
-  },
-  {
-    title: 'Active Users',
-    value: 573,
-    change: '+201',
-    icon: Users,
-    description: 'from last month',
-  },
-];
-
-const recentSales = [
-  {
-    id: '1',
-    customer: 'John Doe',
-    amount: 129.99,
-    time: '2 minutes ago',
-  },
-  {
-    id: '2',
-    customer: 'Jane Smith',
-    amount: 89.50,
-    time: '5 minutes ago',
-  },
-  {
-    id: '3',
-    customer: 'Bob Johnson',
-    amount: 199.99,
-    time: '10 minutes ago',
-  },
-  {
-    id: '4',
-    customer: 'Alice Brown',
-    amount: 59.99,
-    time: '15 minutes ago',
-  },
-];
+interface DashboardStats {
+  today: {
+    totalSales: number;
+    totalRevenue: number;
+    avgOrderValue: number;
+  };
+  thisMonth: {
+    totalSales: number;
+    totalRevenue: number;
+  };
+  recentSales: any[];
+  lowStockCount: number;
+  totalCustomers: number;
+}
 
 export function DashboardPage() {
   const { user, business } = useAuth();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getDashboardStats();
+      setStats((response.data as any).stats || null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load dashboard data',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-6 w-16 bg-gray-200 rounded animate-pulse mb-2" />
+                <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -79,32 +82,76 @@ export function DashboardPage() {
         <h2 className="text-3xl font-bold tracking-tight">
           Welcome back, {user?.firstName}!
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-gray-600">
           Here's what's happening with {business?.name} today.
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stat.title === 'Total Revenue' 
-                  ? formatCurrency(stat.value)
-                  : stat.value.toLocaleString()
-                }
-              </div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{stat.change}</span> {stat.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Today's Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-gray-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatCurrency(stats?.today.totalRevenue || 0)}
+            </div>
+            <p className="text-xs text-gray-600">
+              <span className="text-success font-medium">
+                {stats?.today.totalSales || 0} sales today
+              </span>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Monthly Sales</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-gray-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.thisMonth.totalSales || 0}
+            </div>
+            <p className="text-xs text-gray-600">
+              <span className="text-success font-medium">
+                {formatCurrency(stats?.thisMonth.totalRevenue || 0)} revenue
+              </span>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Customers</CardTitle>
+            <Users className="h-4 w-4 text-gray-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.totalCustomers || 0}
+            </div>
+            <p className="text-xs text-gray-600">
+              <span className="text-primary-500 font-medium">Active customers</span>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+            <Package className="h-4 w-4 text-gray-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {stats?.lowStockCount || 0}
+            </div>
+            <p className="text-xs text-gray-600">
+              <span className="text-warning font-medium">Items need restocking</span>
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Charts and Recent Activity */}
@@ -118,7 +165,7 @@ export function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+            <div className="h-[300px] flex items-center justify-center text-gray-400">
               <div className="text-center">
                 <TrendingUp className="h-12 w-12 mx-auto mb-4" />
                 <p>Sales chart will be displayed here</p>
@@ -133,26 +180,33 @@ export function DashboardPage() {
           <CardHeader>
             <CardTitle>Recent Sales</CardTitle>
             <CardDescription>
-              You made {recentSales.length} sales today
+              {stats?.recentSales?.length || 0} recent transactions
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
-              {recentSales.map((sale) => (
-                <div key={sale.id} className="flex items-center">
-                  <div className="space-y-1 flex-1">
-                    <p className="text-sm font-medium leading-none">
-                      {sale.customer}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {sale.time}
-                    </p>
+              {stats?.recentSales && stats.recentSales.length > 0 ? (
+                stats.recentSales.map((sale: any) => (
+                  <div key={sale._id} className="flex items-center">
+                    <div className="space-y-1 flex-1">
+                      <p className="text-sm font-medium leading-none">
+                        {sale.customer?.name || 'Walk-in Customer'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(sale.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      {formatCurrency(sale.totals?.total || 0)}
+                    </div>
                   </div>
-                  <div className="ml-auto font-medium">
-                    {formatCurrency(sale.amount)}
-                  </div>
+                ))
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  <ShoppingCart className="h-8 w-8 mx-auto mb-2" />
+                  <p>No recent sales</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -171,20 +225,20 @@ export function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="p-4 border rounded-lg hover:bg-accent transition-colors cursor-pointer">
-              <Package className="h-8 w-8 text-primary mb-2" />
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+              <Package className="h-8 w-8 text-primary-500 mb-2" />
               <h3 className="font-medium">Add Product</h3>
-              <p className="text-sm text-muted-foreground">Add new product to inventory</p>
+              <p className="text-sm text-gray-600">Add new product to inventory</p>
             </div>
-            <div className="p-4 border rounded-lg hover:bg-accent transition-colors cursor-pointer">
-              <ShoppingCart className="h-8 w-8 text-primary mb-2" />
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+              <ShoppingCart className="h-8 w-8 text-primary-500 mb-2" />
               <h3 className="font-medium">New Sale</h3>
-              <p className="text-sm text-muted-foreground">Process a new sale</p>
+              <p className="text-sm text-gray-600">Process a new sale</p>
             </div>
-            <div className="p-4 border rounded-lg hover:bg-accent transition-colors cursor-pointer">
-              <TrendingUp className="h-8 w-8 text-primary mb-2" />
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+              <TrendingUp className="h-8 w-8 text-primary-500 mb-2" />
               <h3 className="font-medium">View Reports</h3>
-              <p className="text-sm text-muted-foreground">Check your business analytics</p>
+              <p className="text-sm text-gray-600">Check your business analytics</p>
             </div>
           </div>
         </CardContent>

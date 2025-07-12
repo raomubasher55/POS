@@ -75,7 +75,7 @@ export const requirePermission = (permission: string) => {
       return;
     }
 
-    if (req.user.role === 'admin') {
+    if (req.user.role === 'admin' || req.user.role === 'business_owner') {
       return next();
     }
 

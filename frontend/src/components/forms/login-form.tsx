@@ -62,10 +62,10 @@ export function LoginForm() {
                     message: 'Invalid email address',
                   },
                 })}
-                className={errors.email ? 'border-destructive' : ''}
+                className={errors.email ? 'border-error' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-error">{errors.email.message}</p>
               )}
             </div>
 
@@ -83,7 +83,7 @@ export function LoginForm() {
                       message: 'Password must be at least 6 characters',
                     },
                   })}
-                  className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                  className={errors.password ? 'border-error pr-10' : 'pr-10'}
                 />
                 <Button
                   type="button"
@@ -93,19 +93,19 @@ export function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    <EyeOff className="h-4 w-4 text-gray-400" />
                   ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4 text-gray-400" />
                   )}
                 </Button>
               </div>
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-error">{errors.password.message}</p>
               )}
             </div>
 
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+              <div className="p-3 text-sm text-error bg-error/10 rounded-lg">
                 {error}
               </div>
             )}
@@ -126,7 +126,7 @@ export function LoginForm() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
+              <span className="text-gray-600">Don't have an account? </span>
               <Link
                 to="/register"
                 className="text-primary hover:text-primary-600 font-medium underline-offset-4 hover:underline"

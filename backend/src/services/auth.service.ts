@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 import Business from '../models/business.model';
+import { shopService } from './shop.service';
 import { IUser } from '../types';
 
 export class AuthService {
@@ -81,7 +82,14 @@ export class AuthService {
     savedUser.refreshToken = tokens.refreshToken;
     await savedUser.save();
 
-    return { user: savedUser, business: savedBusiness, tokens };
+    // Create default shop for the business
+    const defaultShop = await shopService.createDefaultShop(savedBusiness._id.toString(), {
+      name: userData.businessName,
+      address: userData.businessAddress,
+      phone: userData.businessPhone
+    });
+
+    return { user: savedUser, business: savedBusiness, shop: defaultShop, tokens };
   }
 
   async loginUser(email: string, password: string) {

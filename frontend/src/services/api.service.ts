@@ -192,6 +192,144 @@ class ApiService {
     return this.api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
   }
 
+  // Sales endpoints
+  async createSale(saleData: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/sales', saleData);
+  }
+
+  async getSales(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/sales', { params });
+  }
+
+  async getSale(saleId: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/sales/${saleId}`);
+  }
+
+  async refundSale(saleId: string, data: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post(`/sales/${saleId}/refund`, data);
+  }
+
+  async getDailySales(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/sales/daily', { params });
+  }
+
+  async getSalesAnalytics(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/sales/analytics', { params });
+  }
+
+  // Customer endpoints
+  async getCustomers(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/customers', { params });
+  }
+
+  async getCustomer(customerId: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/customers/${customerId}`);
+  }
+
+  async createCustomer(customerData: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/customers', customerData);
+  }
+
+  async updateCustomer(customerId: string, data: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.put(`/customers/${customerId}`, data);
+  }
+
+  async deleteCustomer(customerId: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.delete(`/customers/${customerId}`);
+  }
+
+  async searchCustomers(searchTerm: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/customers/search?q=${encodeURIComponent(searchTerm)}`);
+  }
+
+  async getCustomerHistory(customerId: string, params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/customers/${customerId}/history`, { params });
+  }
+
+  // Staff endpoints
+  async getStaff(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/staff', { params });
+  }
+
+  async getStaffMember(staffId: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/staff/${staffId}`);
+  }
+
+  async createStaff(staffData: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/staff', staffData);
+  }
+
+  async updateStaff(staffId: string, data: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.put(`/staff/${staffId}`, data);
+  }
+
+  async deleteStaff(staffId: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.delete(`/staff/${staffId}`);
+  }
+
+  async searchStaff(searchTerm: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/staff/search?q=${encodeURIComponent(searchTerm)}`);
+  }
+
+  async getAvailablePermissions(): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/staff/permissions');
+  }
+
+  // Reports endpoints
+  async getDashboardStats(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/dashboard', { params });
+  }
+
+  async getSalesReport(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/sales', { params });
+  }
+
+  async getInventoryReport(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/inventory', { params });
+  }
+
+  async getCustomerReport(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/customers', { params });
+  }
+
+  async getStaffReport(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/staff', { params });
+  }
+
+  async exportSalesData(params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/reports/export/sales', { params });
+  }
+
+  // Receipt endpoints
+  async generateReceipt(saleId: string, params?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get(`/receipts/${saleId}`, { params });
+  }
+
+  async printReceipt(saleId: string, data?: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post(`/receipts/${saleId}/print`, data);
+  }
+
+  async emailReceipt(saleId: string, data: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post(`/receipts/${saleId}/email`, data);
+  }
+
+  // Settings endpoints
+  async getBusinessSettings(): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/settings');
+  }
+
+  async updateBusinessSettings(settings: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.put('/settings', settings);
+  }
+
+  async getPaymentMethods(): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/settings/payment-methods');
+  }
+
+  async updatePaymentMethods(methods: any): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.put('/settings/payment-methods', methods);
+  }
+
   // Helper methods
   isAuthenticated(): boolean {
     return !!localStorage.getItem('accessToken');

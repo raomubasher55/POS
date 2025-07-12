@@ -19,9 +19,34 @@ export const createProduct = async (req: AuthenticatedRequest, res: Response): P
       return;
     }
 
+    const businessId = (req.user.businessId as any)?._id?.toString() || req.user.businessId?.toString();
+    
+    // Get default shop if shopId not provided
+    const shopId = req.body.shopId;
+    if (!shopId) {
+      res.status(400).json({ message: 'Shop ID is required' });
+      return;
+    }
+    
+    // Transform flat input to model structure
     const productData = {
-      ...req.body,
-      businessId: req.user.businessId
+      name: req.body.name,
+      description: req.body.description,
+      sku: req.body.sku || `${Date.now()}`,
+      businessId,
+      categoryId: req.body.categoryId,
+      pricing: {
+        retailPrice: req.body.price,
+        wholesalePrice: req.body.wholesalePrice,
+        cost: req.body.cost
+      },
+      inventory: [{
+        shopId: shopId,
+        quantity: req.body.stock || 0,
+        minStock: req.body.minStock || 0,
+        maxStock: req.body.maxStock
+      }],
+      isActive: true
     };
 
     const product = await productService.createProduct(productData);
@@ -43,7 +68,7 @@ export const getProducts = async (req: AuthenticatedRequest, res: Response): Pro
       return;
     }
 
-    const businessId = req.user.businessId?.toString();
+    const businessId = (req.user.businessId as any)?._id?.toString() || req.user.businessId?.toString();
     if (!businessId) {
       res.status(400).json({ message: 'Business ID required' });
       return;
@@ -159,7 +184,7 @@ export const searchProducts = async (req: AuthenticatedRequest, res: Response): 
       return;
     }
 
-    const businessId = req.user.businessId?.toString();
+    const businessId = (req.user.businessId as any)?._id?.toString() || req.user.businessId?.toString();
     const { q: searchTerm } = req.query;
 
     if (!businessId) {
