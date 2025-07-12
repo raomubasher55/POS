@@ -1,23 +1,7 @@
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/User';
+import User from '../models/user.model';
 import { AuthenticatedRequest, JwtPayload } from '../types';
-
-export const generateTokens = (userId: string): { accessToken: string; refreshToken: string } => {
-  const accessToken = jwt.sign(
-    { userId },
-    process.env.JWT_SECRET!,
-    { expiresIn: '1h' }
-  );
-
-  const refreshToken = jwt.sign(
-    { userId },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: '7d' }
-  );
-
-  return { accessToken, refreshToken };
-};
 
 export const verifyToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -41,7 +25,6 @@ export const verifyToken = async (req: AuthenticatedRequest, res: Response, next
       return;
     }
 
-    // Check if business subscription is active (except for admins)
     if (user.role !== 'admin' && user.businessId) {
       if (!(user.businessId as any).isSubscriptionActive) {
         res.status(403).json({ 
@@ -64,22 +47,6 @@ export const verifyToken = async (req: AuthenticatedRequest, res: Response, next
     }
     
     res.status(401).json({ message: 'Invalid token' });
-  }
-};
-
-export const verifyRefreshToken = async (refreshToken: string) => {
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayload;
-    
-    const user = await User.findById(decoded.userId);
-    
-    if (!user || user.refreshToken !== refreshToken) {
-      throw new Error('Invalid refresh token');
-    }
-
-    return user;
-  } catch (error) {
-    throw new Error('Invalid refresh token');
   }
 };
 
@@ -109,7 +76,7 @@ export const requirePermission = (permission: string) => {
     }
 
     if (req.user.role === 'admin') {
-      return next(); // Admins have all permissions
+      return next();
     }
 
     if (!req.user.permissions.includes(permission)) {
@@ -131,7 +98,7 @@ export const requireBusinessAccess = (req: AuthenticatedRequest, res: Response, 
   }
 
   if (req.user.role === 'admin') {
-    return next(); // Admins can access any business
+    return next();
   }
 
   const businessId = req.params.businessId || req.body.businessId || req.query.businessId;

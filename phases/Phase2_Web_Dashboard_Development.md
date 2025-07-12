@@ -30,12 +30,11 @@
 - Sales transaction processing
 - Credit sales tracking
 - Payment method management
-- Receipt generation and printing
+- Receipt generation 
 - Sales history and search
-- Return and refund processing
 
 ### 4. Inventory Management (Week 4-5)
-- Real-time stock tracking
+- stock tracking
 - Low stock alerts
 - Stock adjustment tools
 - Supplier management
@@ -45,23 +44,18 @@
 ### 5. Staff Management (Week 5)
 - Add/remove staff members
 - Role-based permissions (cashier, manager, admin)
-- Staff performance tracking
 - Login credentials management
-- Shift management
 
-### 6. Multi-Shop Support (Week 6)
+<!-- ### 6. Multi-Shop Support (Week 6). not for now
 - Shop creation and configuration
 - Shop-specific inventory
 - Inter-shop stock transfers
 - Shop performance comparison
-- Centralized vs. shop-specific reporting
+- Centralized vs. shop-specific reporting -->
 
 ### 7. Reporting & Analytics (Week 7)
 - Daily/weekly/monthly sales reports
-- Product performance analytics
 - Staff performance reports
-- Financial summaries
-- Expense and income tracking
 - Custom date range reports
 - Export to PDF/Excel
 

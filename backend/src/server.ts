@@ -7,18 +7,20 @@ import routes from './routes';
 import connectDB from './config/database';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '5005', 10);
 
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: [
+  origin: process.env.NODE_ENV === 'development' ? true : [
     'http://localhost:3000',
     'http://localhost:5173', 
-    'http://localhost:5174',
+    'http://localhost:5175',
     process.env.FRONTEND_URL || 'http://localhost:3000'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Rate limiting
@@ -61,7 +63,9 @@ app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Local: http://localhost:${PORT}`);
+  console.log(`Network: http://192.168.1.7:${PORT}`);
 });

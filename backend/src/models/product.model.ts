@@ -17,8 +17,7 @@ const productSchema = new mongoose.Schema({
   },
   barcode: {
     type: String,
-    trim: true,
-    sparse: true
+    trim: true
   },
   businessId: {
     type: mongoose.Schema.Types.ObjectId,

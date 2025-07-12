@@ -15,7 +15,9 @@
       "Bash(npm install:*)",
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(mv:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   }
