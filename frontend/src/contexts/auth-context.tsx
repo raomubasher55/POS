@@ -121,7 +121,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
       
-      const response = await apiService.register(data);
+      // Transform businessAddress object to string format for backend compatibility
+      const transformedData = {
+        ...data,
+        businessAddress: `${data.businessAddress.street}, ${data.businessAddress.city}, ${data.businessAddress.state} ${data.businessAddress.zipCode}, ${data.businessAddress.country}`
+      };
+      
+      const response = await apiService.register(transformedData);
       const { user, business } = response.data;
 
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, business } });

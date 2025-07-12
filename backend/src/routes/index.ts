@@ -3,6 +3,7 @@ import authRoutes from './auth.routes';
 import userRoutes from './user.routes';
 import productRoutes from './product.routes';
 import categoryRoutes from './category.routes';
+import shopRoutes from './shop.routes';
 import saleRoutes from './sale.routes';
 import customerRoutes from './customer.routes';
 import receiptRoutes from './receipt.routes';

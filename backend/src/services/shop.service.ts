@@ -40,15 +40,25 @@ export class ShopService {
   }
 
   async createDefaultShop(businessId: string, businessData: any): Promise<any> {
+    // Parse address string into structured format
+    const addressParts = businessData.address.split(', ');
+    const address = {
+      street: addressParts[0] || 'Main Street',
+      city: addressParts[1] || 'Main City',
+      state: addressParts[2] || 'Main State',
+      zipCode: addressParts[3] || '12345',
+      country: addressParts[4] || 'Main Country'
+    };
+
     const defaultShopData = {
-      name: `${businessData.name} - Main Store`,
+      name: businessData.name,
       businessId,
-      address: businessData.address,
+      address,
       phone: businessData.phone,
       settings: {
         openingTime: '09:00',
-        closingTime: '18:00',
-        workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        closingTime: '17:00',
+        workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
       },
       isActive: true
     };

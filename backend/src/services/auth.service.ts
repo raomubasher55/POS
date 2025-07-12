@@ -52,11 +52,21 @@ export class AuthService {
       throw new Error('User already exists');
     }
 
+    // Parse address string into structured format
+    const addressParts = userData.businessAddress.split(', ');
+    const address = {
+      street: addressParts[0] || 'Main Street',
+      city: addressParts[1] || 'Main City',
+      state: addressParts[2] || 'Main State',
+      zipCode: addressParts[3] || '12345',
+      country: addressParts[4] || 'Main Country'
+    };
+
     const business = new Business({
       name: userData.businessName,
       email: userData.businessEmail,
       phone: userData.businessPhone,
-      address: userData.businessAddress,
+      address,
       owner: null
     });
 
