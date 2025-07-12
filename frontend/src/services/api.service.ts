@@ -330,6 +330,27 @@ class ApiService {
     return this.api.put('/settings/payment-methods', methods);
   }
 
+  // MFA endpoints
+  async getMFAStatus(): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.get('/mfa/status');
+  }
+
+  async setupMFA(): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/mfa/setup');
+  }
+
+  async verifyMFA(token: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/mfa/verify', { token });
+  }
+
+  async disableMFA(data: { password: string; mfaToken?: string }): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/mfa/disable', data);
+  }
+
+  async generateBackupCodes(mfaToken: string): Promise<AxiosResponse<ApiResponse>> {
+    return this.api.post('/mfa/backup-codes', { mfaToken });
+  }
+
   // Helper methods
   isAuthenticated(): boolean {
     return !!localStorage.getItem('accessToken');

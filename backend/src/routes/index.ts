@@ -10,6 +10,7 @@ import receiptRoutes from './receipt.routes';
 import staffRoutes from './staff.routes';
 import reportsRoutes from './reports.routes';
 import settingsRoutes from './settings.routes';
+import mfaRoutes from './mfa.routes';
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router.use(`${API_PREFIX}/receipts`, receiptRoutes);
 router.use(`${API_PREFIX}/staff`, staffRoutes);
 router.use(`${API_PREFIX}/reports`, reportsRoutes);
 router.use(`${API_PREFIX}/settings`, settingsRoutes);
+router.use(`${API_PREFIX}/mfa`, mfaRoutes);
 
 // API documentation endpoint
 router.get('/api', (req: Request, res: Response) => {
@@ -44,6 +46,7 @@ router.get('/api', (req: Request, res: Response) => {
       staff: `${API_PREFIX}/staff`,
       reports: `${API_PREFIX}/reports`,
       settings: `${API_PREFIX}/settings`,
+      mfa: `${API_PREFIX}/mfa`,
     }
   });
 });

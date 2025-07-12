@@ -5,13 +5,25 @@ import {
   CubeIcon, 
   ShoppingCartIcon,
   ChartBarIcon,
-  CogIcon
+  CogIcon,
+  ClipboardDocumentListIcon,
+  BuildingOfficeIcon,
+  DocumentTextIcon,
+  CreditCardIcon,
+  UsersIcon,
+  TagIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Products', href: '/products', icon: CubeIcon },
   { name: 'Sales', href: '/sales', icon: ShoppingCartIcon },
+  { name: 'Products', href: '/products', icon: CubeIcon },
+  { name: 'Categories', href: '/categories', icon: TagIcon },
+  { name: 'Customers', href: '/customers', icon: UsersIcon },
+  { name: 'Inventory', href: '/inventory', icon: ClipboardDocumentListIcon },
+  { name: 'Suppliers', href: '/suppliers', icon: BuildingOfficeIcon },
+  { name: 'Purchase Orders', href: '/purchase-orders', icon: DocumentTextIcon },
+  { name: 'Credit Sales', href: '/credit-sales', icon: CreditCardIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
   { name: 'Settings', href: '/settings', icon: CogIcon },
 ];

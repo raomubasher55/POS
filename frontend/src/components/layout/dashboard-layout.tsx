@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { PERMISSIONS } from '@/constants/permissions';
 import {
   LayoutDashboard,
   Package,
@@ -13,40 +15,93 @@ import {
   X,
   LogOut,
   User,
+  ClipboardList,
+  Building2,
+  FileText,
+  CreditCard,
+  Users,
+  Tag,
 } from 'lucide-react';
 
-const navigation = [
+const allNavigationItems = [
   {
     name: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
-  },
-  {
-    name: 'Products',
-    href: '/products',
-    icon: Package,
+    permission: PERMISSIONS.DASHBOARD_VIEW,
   },
   {
     name: 'Sales',
     href: '/sales',
     icon: ShoppingCart,
+    permission: PERMISSIONS.SALES_VIEW,
+  },
+  {
+    name: 'Products',
+    href: '/products',
+    icon: Package,
+    permission: PERMISSIONS.PRODUCTS_VIEW,
+  },
+  {
+    name: 'Categories',
+    href: '/categories',
+    icon: Tag,
+    permission: PERMISSIONS.CATEGORIES_VIEW,
+  },
+  {
+    name: 'Customers',
+    href: '/customers',
+    icon: Users,
+    permission: PERMISSIONS.CUSTOMERS_VIEW,
+  },
+  {
+    name: 'Inventory',
+    href: '/inventory',
+    icon: ClipboardList,
+    permission: PERMISSIONS.INVENTORY_VIEW,
+  },
+  {
+    name: 'Suppliers',
+    href: '/suppliers',
+    icon: Building2,
+    permission: PERMISSIONS.SUPPLIERS_VIEW,
+  },
+  {
+    name: 'Purchase Orders',
+    href: '/purchase-orders',
+    icon: FileText,
+    permission: PERMISSIONS.PURCHASE_ORDERS_VIEW,
+  },
+  {
+    name: 'Credit Sales',
+    href: '/credit-sales',
+    icon: CreditCard,
+    permission: PERMISSIONS.CREDIT_SALES_VIEW,
   },
   {
     name: 'Reports',
     href: '/reports',
     icon: BarChart3,
+    permission: PERMISSIONS.REPORTS_VIEW,
   },
   {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
+    permission: PERMISSIONS.SETTINGS_VIEW,
   },
 ];
 
 export function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, business, logout } = useAuth();
+  const { hasPermission } = usePermissions();
   const location = useLocation();
+
+  // Filter navigation items based on user permissions
+  const navigation = allNavigationItems.filter(item => 
+    hasPermission(item.permission)
+  );
 
   const handleLogout = async () => {
     await logout();

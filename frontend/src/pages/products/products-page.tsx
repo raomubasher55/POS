@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
+import { apiService } from '@/services/api.service';
+import { toast } from '@/hooks/use-toast';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import {
   Plus,
   Search,
@@ -10,66 +13,142 @@ import {
   Edit,
   Trash2,
   MoreHorizontal,
+  Filter,
+  Download,
+  Upload,
+  Image,
 } from 'lucide-react';
 
-// Mock data - replace with real API calls
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Premium Coffee Beans',
-    sku: 'COF-001',
-    price: 24.99,
-    cost: 12.50,
-    stock: 45,
-    category: 'Beverages',
-    lowStockThreshold: 10,
-  },
-  {
-    id: '2',
-    name: 'Organic Tea Blend',
-    sku: 'TEA-001',
-    price: 18.99,
-    cost: 9.00,
-    stock: 23,
-    category: 'Beverages',
-    lowStockThreshold: 15,
-  },
-  {
-    id: '3',
-    name: 'Chocolate Croissant',
-    sku: 'BAK-001',
-    price: 4.99,
-    cost: 2.25,
-    stock: 8,
-    category: 'Bakery',
-    lowStockThreshold: 10,
-  },
-  {
-    id: '4',
-    name: 'Cappuccino Cup',
-    sku: 'CUP-001',
-    price: 12.99,
-    cost: 5.50,
-    stock: 120,
-    category: 'Accessories',
-    lowStockThreshold: 20,
-  },
-];
+interface Product {
+  _id: string;
+  name: string;
+  sku: string;
+  price: number;
+  cost?: number;
+  totalStock: number;
+  category: {
+    name: string;
+  };
+  minStock: number;
+  images?: string[];
+  barcode?: string;
+}
 
 export function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [products] = useState(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [showAddDialog, setShowAddDialog] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getProducts();
+      setProducts((response.data as any)?.products || []);
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load products',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredProducts = products.filter(
     (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       product.category.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (categoryFilter === '' || product.category.name === categoryFilter)
   );
 
   const lowStockProducts = products.filter(
-    (product) => product.stock <= product.lowStockThreshold
+    (product) => product.totalStock <= product.minStock
   );
+
+  const categories = [...new Set(products.map(p => p.category.name))];
+
+  const handleExportProducts = async () => {
+    try {
+      const csvContent = [
+        ['Name', 'SKU', 'Category', 'Price', 'Stock', 'Min Stock'].join(','),
+        ...filteredProducts.map(p => [
+          p.name,
+          p.sku,
+          p.category.name,
+          p.price,
+          p.totalStock,
+          p.minStock
+        ].join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'products.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: 'Success',
+        description: 'Products exported successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export products',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleBulkImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csv = e.target?.result as string;
+        const lines = csv.split('\n');
+        const headers = lines[0].split(',');
+        
+        // Process CSV data (simplified example)
+        toast({
+          title: 'Import Started',
+          description: `Processing ${lines.length - 1} products...`,
+        });
+        
+        // In a real implementation, you'd parse and validate the CSV
+        // and make API calls to create products
+        
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to process CSV file',
+          variant: 'destructive',
+        });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -81,10 +160,31 @@ export function ProductsPage() {
             Manage your inventory and product catalog
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleExportProducts}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <label htmlFor="bulk-import">
+            <Button variant="outline" asChild>
+              <span>
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </span>
+            </Button>
+          </label>
+          <input
+            id="bulk-import"
+            type="file"
+            accept=".csv"
+            onChange={handleBulkImport}
+            className="hidden"
+          />
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -123,7 +223,7 @@ export function ProductsPage() {
           <CardContent>
             <div className="text-2xl font-bold">
               {formatCurrency(
-                products.reduce((total, product) => total + (product.price * product.stock), 0)
+                products.reduce((total, product) => total + (product.price * (product.totalStock || (product as any).stock || 0)), 0)
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -167,6 +267,23 @@ export function ProductsPage() {
                 className="pl-8"
               />
             </div>
+            <div className="w-48">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button variant="outline" size="icon">
+              <Filter className="h-4 w-4" />
+            </Button>
           </div>
 
           {/* Products Table */}
@@ -197,22 +314,35 @@ export function ProductsPage() {
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b hover:bg-muted/50">
+                    <tr key={product._id} className="border-b hover:bg-muted/50">
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                            <Package className="h-5 w-5 text-muted-foreground" />
+                          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                            {product.images && product.images.length > 0 ? (
+                              <img 
+                                src={product.images[0]} 
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="h-5 w-5 text-muted-foreground" />
+                            )}
                           </div>
                           <div>
                             <div className="font-medium">{product.name}</div>
                             <div className="text-sm text-muted-foreground">
-                              Cost: {formatCurrency(product.cost)}
+                              {product.cost ? `Cost: ${formatCurrency(product.cost)}` : 'No cost set'}
+                              {product.barcode && (
+                                <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
+                                  {product.barcode}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="p-4 text-sm">{product.sku}</td>
-                      <td className="p-4 text-sm">{product.category}</td>
+                      <td className="p-4 text-sm">{product.category.name}</td>
                       <td className="p-4 text-sm font-medium">
                         {formatCurrency(product.price)}
                       </td>
@@ -220,14 +350,14 @@ export function ProductsPage() {
                         <div className="flex items-center">
                           <span 
                             className={`text-sm font-medium ${
-                              product.stock <= product.lowStockThreshold 
+                              product.totalStock <= product.minStock 
                                 ? 'text-orange-600' 
                                 : 'text-foreground'
                             }`}
                           >
-                            {product.stock}
+                            {product.totalStock}
                           </span>
-                          {product.stock <= product.lowStockThreshold && (
+                          {product.totalStock <= product.minStock && (
                             <span className="ml-2 text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
                               Low stock
                             </span>

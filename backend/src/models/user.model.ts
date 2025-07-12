@@ -47,7 +47,17 @@ const userSchema = new Schema<IUser>({
   },
   refreshToken: {
     type: String
-  }
+  },
+  mfaEnabled: {
+    type: Boolean,
+    default: false
+  },
+  mfaSecret: {
+    type: String
+  },
+  mfaBackupCodes: [{
+    type: String
+  }]
 }, {
   timestamps: true
 });
@@ -85,6 +95,8 @@ userSchema.set('toJSON', {
   transform: function(doc: any, ret: any) {
     delete ret.password;
     delete ret.refreshToken;
+    delete ret.mfaSecret;
+    delete ret.mfaBackupCodes;
     return ret;
   }
 });

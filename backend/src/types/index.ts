@@ -13,6 +13,9 @@ export interface IUser extends Document {
   isActive: boolean;
   lastLogin?: Date;
   refreshToken?: string;
+  mfaEnabled?: boolean;
+  mfaSecret?: string;
+  mfaBackupCodes?: string[];
   fullName: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -209,6 +212,7 @@ export interface ISubscription extends Document {
 // Express Request with authenticated user
 export interface AuthenticatedRequest extends Request {
   user?: IUser;
+  file?: Express.Multer.File;
 }
 
 // API Response Types
